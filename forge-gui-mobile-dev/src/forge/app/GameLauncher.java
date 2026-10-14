@@ -20,7 +20,8 @@ import java.nio.file.Paths;
 
 public class GameLauncher {
     public GameLauncher(final String versionString, final String[] args) {
-        String assetsDir = Files.exists(Paths.get("./res")) ? "./" : "../forge-gui/";
+        String assetsDir = System.getProperty("forge.assetsDir",
+                Files.exists(Paths.get("./res")) ? "./" : "../forge-gui/");
 
         // Place the file "switch_orientation.ini" to your assets folder to make the game switch to landscape orientation (unless desktopMode = true)
         String switchOrientationFile = assetsDir + "switch_orientation.ini";

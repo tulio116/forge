@@ -322,16 +322,29 @@ public class MatchScreen extends FScreen {
     @Override
     protected void doLayout(float startY, float width, float height) {
         float scrollerWidth = width;
+        final float promptHeight = getPromptHeight();
         if (topPlayerPrompt != null) {
-            topPlayerPrompt.setBounds(0, 0, width, VPrompt.HEIGHT);
+            topPlayerPrompt.setBounds(0, 0, width, promptHeight);
             float menuBarWidth = getHeader().getHeight();
-            float menuBarHeight = height - 2 * VPrompt.HEIGHT;
-            getHeader().setBounds(width - menuBarHeight, height - VPrompt.HEIGHT, menuBarHeight, menuBarWidth); //adjust position prior to rotate transform
-            startY = VPrompt.HEIGHT;
+            float menuBarHeight = height - 2 * promptHeight;
+            getHeader().setBounds(width - menuBarHeight, height - promptHeight, menuBarHeight, menuBarWidth); //adjust position prior to rotate transform
+            startY = promptHeight;
             scrollerWidth -= menuBarWidth;
         }
-        scroller.setBounds(0, startY, scrollerWidth, height - VPrompt.HEIGHT - startY);
-        bottomPlayerPrompt.setBounds(0, height - VPrompt.HEIGHT, width, VPrompt.HEIGHT);
+        scroller.setBounds(0, startY, scrollerWidth, height - promptHeight - startY);
+        bottomPlayerPrompt.setBounds(0, height - promptHeight, width, promptHeight);
+    }
+
+    public float getPromptHeight() {
+        return bottomPlayerPrompt.getPreferredHeight();
+    }
+
+    public void refreshDuelContext() {
+        final GameView game = MatchController.instance.getGameView();
+        bottomPlayerPrompt.updateDuelContext(game);
+        if (topPlayerPrompt != null) {
+            topPlayerPrompt.updateDuelContext(game);
+        }
     }
 
     @Override
@@ -342,9 +355,9 @@ public class MatchScreen extends FScreen {
     @Override
     public Rectangle getDropDownBoundary() {
         if (topPlayerPrompt == null) {
-            return new Rectangle(0, 0, getWidth(), getHeight() - VPrompt.HEIGHT); //prevent covering prompt
+            return new Rectangle(0, 0, getWidth(), getHeight() - getPromptHeight()); //prevent covering prompt
         }
-        return new Rectangle(0, VPrompt.HEIGHT, scroller.getWidth(), getHeight() - 2 * VPrompt.HEIGHT);
+        return new Rectangle(0, getPromptHeight(), scroller.getWidth(), getHeight() - 2 * getPromptHeight());
     }
 
     @Override

@@ -103,3 +103,7 @@ __pycache__
 # EDHREC commander matrix tool intermediates
 forge-gui/tools/build
 forge-gui-ios/robovm.properties
+
+# Local Adventure UI development artifacts and external-volume metadata
+.dev/
+._*
