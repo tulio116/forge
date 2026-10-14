@@ -119,6 +119,13 @@ public class MatchController extends NetworkGuiGame {
                 updatePromptForAwait(other);
             }
         }
+        refreshDuelContext();
+    }
+
+    private void refreshDuelContext() {
+        if (view != null) {
+            view.refreshDuelContext();
+        }
     }
 
     private VDrawOfferDialog drawOfferDialog;
@@ -244,6 +251,7 @@ public class MatchController extends NetworkGuiGame {
             }
         }
         view = new MatchScreen(playerPanels);
+        refreshDuelContext();
         DiceOverlay.getInstance().attach(getGameView().getGame()); // mobile-only dice animations
         if(GuiBase.isNetPlay(this))
             view.resetFields();
@@ -260,7 +268,7 @@ public class MatchController extends NetworkGuiGame {
 
                 @Override
                 public void buildTouchListeners(final float screenX, final float screenY, final List<FDisplayObject> listeners) {
-                    if (screenY < view.getHeight() - VPrompt.HEIGHT) {
+                    if (screenY < view.getHeight() - view.getPromptHeight()) {
                         hostedMatch.pause();
                     }
                 }
@@ -275,12 +283,14 @@ public class MatchController extends NetworkGuiGame {
 
     public void showPromptMessageNoCancel(final PlayerView player, final String message) {
         view.getPrompt(player).setMessage(message);
+        refreshDuelContext();
     }
 
     @Override
     public void showPromptMessage(final PlayerView player, final String message, final CardView card) {
         cancelAwaitNextInput();
         view.getPrompt(player).setMessage(message, card);
+        refreshDuelContext();
     }
 
     @Override
@@ -291,6 +301,8 @@ public class MatchController extends NetworkGuiGame {
         btn2.setText(label2);
         btn1.setEnabled(enable1);
         btn2.setEnabled(enable2);
+        prompt.revalidate();
+        refreshDuelContext();
     }
 
     public static void setIntroShowing(final boolean showing) {
@@ -367,6 +379,7 @@ public class MatchController extends NetworkGuiGame {
     private PlayerView lastPlayer;
     @Override
     public void updatePhase(boolean saveState) {
+        refreshDuelContext();
         final PhaseType ph = getGameView().getPhase();
         if (ph != null) {
             if (ph.isBefore(PhaseType.END_OF_TURN))
@@ -402,6 +415,7 @@ public class MatchController extends NetworkGuiGame {
 
     @Override
     public void updateTurn(final PlayerView player) {
+        refreshDuelContext();
     }
 
     @Override
@@ -474,6 +488,7 @@ public class MatchController extends NetworkGuiGame {
     @Override
     public void updateStack() {
         view.getStack().update();
+        refreshDuelContext();
     }
 
     @Override
@@ -825,7 +840,9 @@ public class MatchController extends NetworkGuiGame {
 
     @Override
     public void setCard(final CardView card) {
-        // doesn't need to do anything
+        if (view != null && getCurrentPlayer() != null) {
+            view.getPrompt(getCurrentPlayer()).setCardView(card);
+        }
     }
 
     @Override
